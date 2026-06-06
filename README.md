@@ -14,10 +14,9 @@ The current implementation follows a clean separation of responsibilities:
 ## Repository layout
 
 ```text
-EpiZoo_v3/
+EpiZoo/
   README.md
   requirements.txt
-  pyproject.toml
   .gitignore
 
   epizoo/
@@ -83,7 +82,7 @@ Create a clean Python environment first. Python 3.10 or newer is recommended.
 
 ```bash
 git clone <your-repo-url> EpiZoo_v3
-cd EpiZoo_v3
+cd EpiZoo
 pip install -e .
 ```
 
@@ -653,24 +652,6 @@ plot_density_scatter(
     save_path="scatter.pdf",
 )
 ```
-
-## Notes for GitHub release
-
-This repository intentionally does not include:
-
-- raw `.h5ad` datasets
-- generated TF-IDF matrices
-- generated SEAM sequence embeddings
-- model checkpoints (`.pt`, `.pth`)
-- genome FASTA files
-- liftOver chain files
-- DNABERT-2 pretrained weights
-
-These should be stored externally and downloaded or generated as part of the user workflow.
-
-## License
-
-Please add a license before public release. Recommended options include MIT, Apache-2.0, or BSD-3-Clause, depending on your intended distribution policy.
 
 ## Citation
 
