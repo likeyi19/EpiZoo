@@ -1,4 +1,4 @@
-# EpiZoo v3
+# EpiZoo
 
 EpiZoo is a multi-task foundation model toolkit for single-cell chromatin accessibility modeling across species, tasks, and sequence-level perturbations. This repository contains a refactored, modular implementation of the EpiZoo model family, including foundation fine-tuning, data imputation, cell type annotation, cross-species transfer, cancer-context modeling, sequence accessibility prediction, and attribution analysis.
 
