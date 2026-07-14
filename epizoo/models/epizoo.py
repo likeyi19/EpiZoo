@@ -193,8 +193,9 @@ class EpiZoo(nn.Module):
         total_loss = torch.zeros([], device=cell_emb.device)
         total_weight = 0
         outputs = {}
-        for sp, vocab_size in self.signal_decoder.decoders.items():
+        for sp, decoder in self.signal_decoder.decoders.items():
             mask = torch.tensor([s==sp for s in species_names], device=cell_emb.device, dtype=torch.bool)
+            vocab_size = decoder.out_features
             if mask.any():
                 sp_emb = cell_emb[mask]
                 pred = self.signal_decoder(sp_emb, sp)
