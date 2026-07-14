@@ -7,7 +7,7 @@ from typing import Optional
 
 import torch
 import torch.nn as nn
-from transformers import AutoModel, BertConfig
+from transformers import AutoModel, AutoConfig, AutoTokenizer
 
 
 @dataclass
@@ -16,7 +16,7 @@ class SEAMConfig:
     Configuration for SEAM.
     """
 
-    dnabert_path: str
+    cfg_path: str
     emb_dim: int = 512
     trust_remote_code: bool = True
 
@@ -39,12 +39,14 @@ class SEAM(nn.Module):
 
         self.cfg = cfg
 
-        bert_cfg = BertConfig.from_pretrained(cfg.dnabert_path)
-
-        self.backbone = AutoModel.from_pretrained(
-            cfg.dnabert_path,
+        bert_cfg = AutoConfig.from_pretrained(
+            cfg.cfg_path,
             trust_remote_code=cfg.trust_remote_code,
-            config=bert_cfg,
+        )
+
+        self.backbone = AutoModel.from_config(
+            bert_cfg,
+            trust_remote_code=cfg.trust_remote_code,
         )
 
         hidden_size = getattr(bert_cfg, "hidden_size", 768)

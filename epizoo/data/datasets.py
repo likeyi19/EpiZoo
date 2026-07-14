@@ -897,7 +897,7 @@ class SEAMDataset(Dataset):
     def __init__(
         self,
         sequences,
-        dnabert_path: str,
+        cfg_path: str,
         signals=None,
         max_length: int = 512,
         trust_remote_code: bool = True,
@@ -918,7 +918,7 @@ class SEAMDataset(Dataset):
                 )
 
         self.tokenizer = AutoTokenizer.from_pretrained(
-            dnabert_path,
+            cfg_path,
             trust_remote_code=trust_remote_code,
         )
 

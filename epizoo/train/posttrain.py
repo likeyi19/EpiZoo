@@ -343,6 +343,8 @@ class EpiZooXPostTrainer:
             f"loss={loss:.4f} | "
             f"sr={sr_loss:.4f} | "
             f"cca={cca_loss:.4f} | "
+            f"cca_pos_acc={cca_metrics['pos_acc']:.4f} | "
+            f"cca_neg_acc={cca_metrics['neg_acc']:.4f} | "
             f"auroc={cca_metrics['auroc']:.4f} | "
             f"auprc={cca_metrics['auprc']:.4f}"
         )
