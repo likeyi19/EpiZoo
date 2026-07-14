@@ -159,7 +159,6 @@ def create_mlp_cls(
     if getattr(config, "use_moe", False):
         return partial(
             SparseMoEFeedForward,
-            hidden_size=config.hidden_size,
             ffn_size=inner_dim,
             num_experts=getattr(config, "num_experts", 4),
             top_k=getattr(config, "top_k", 2),

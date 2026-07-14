@@ -6,6 +6,7 @@ from typing import Literal, Optional
 
 import numpy as np
 import pandas as pd
+import scipy.sparse as sp
 
 
 def compute_tfidf(
@@ -16,6 +17,7 @@ def compute_tfidf(
     dtype=np.float32,
     store: Literal["X", "obsm"] = "X",
     obsm_key: str = "X_tfidf",
+    verbose: bool = True,
 ):
     """
     Compute TF-IDF normalization for a cell-by-cCRE count AnnData.
@@ -99,12 +101,58 @@ def compute_tfidf(
         idf=idf,
         scale_factor=scale_factor,
         dtype=dtype,
-    )
+    ).tocsr()
 
     if store == "X":
         tfidf_adata.X = tfidf
     else:
         tfidf_adata.obsm[obsm_key] = tfidf
+
+    if verbose:
+        if store == "X":
+            print("TF-IDF completed. TF-IDF matrix stored in adata.X")
+        else:
+            print(f"TF-IDF completed. TF-IDF matrix stored in adata.obsm['{obsm_key}']")
+        
+        print("=" * 50)
+        print(f"Matrix shape: {tfidf.shape}")
+        print(f"Matrix type: {type(tfidf)}")
+        print(f"Data type: {tfidf.dtype}")
+
+        if sp.issparse(tfidf):
+            nnz = tfidf.nnz
+            total = tfidf.shape[0] * tfidf.shape[1]
+            values = tfidf.data
+            features_per_cell = np.asarray((tfidf > 0).sum(axis=1)).flatten()
+
+            print(f"Non-zero entries: {nnz:,}")
+            print(f"Sparsity: {1 - nnz / total:.4%}")
+            print(f"Non-zero value min: {values.min():.6f}")
+            print(f"Non-zero value max: {values.max():.6f}")
+            print(f"Non-zero value mean: {values.mean():.6f}")
+            print(f"Non-zero value median: {np.median(values):.6f}")
+
+        else:
+            nnz = np.count_nonzero(tfidf)
+            total = tfidf.size
+            values = tfidf[tfidf > 0]
+
+            print(f"Non-zero entries: {nnz:,}")
+            print(f"Sparsity: {1 - nnz / total:.4%}")
+            print(f"Non-zero value min: {values.min():.6f}")
+            print(f"Non-zero value max: {values.max():.6f}")
+            print(f"Non-zero value mean: {values.mean():.6f}")
+            print(f"Non-zero value median: {np.median(values):.6f}")
+
+            features_per_cell = np.sum(tfidf > 0,axis=1)
+
+        print("-" * 50)
+        print(f"Accessible cCREs per cell:")
+        print(f"  Mean: {features_per_cell.mean():.2f}")
+        print(f"  Median: {np.median(features_per_cell):.2f}")
+        print(f"  Min: {features_per_cell.min()}")
+        print(f"  Max: {features_per_cell.max()}")
+        print("=" * 50)
 
     return tfidf_adata
 
@@ -373,3 +421,75 @@ def _is_sparse(x) -> bool:
         return sp.issparse(x)
     except ImportError:
         return False
+    
+
+def filter_cCREs(adata, filter_idx, species, verbose=True):
+    """
+    Filter cCRE features in an AnnData object using a predefined cCRE selection index.
+
+    This function removes low-quality or uninformative cCREs according to the
+    species-specific filtering strategy used in EpiZoo. The input AnnData object
+    is expected to contain cells as rows and cCREs as columns.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        Input single-cell chromatin accessibility dataset.
+        The feature dimension (adata.n_vars) should correspond to the full
+        species-specific cCRE vocabulary.
+
+    filter_idx : array-like
+        Boolean index or integer index array specifying the retained cCREs after
+        filtering.
+
+    species : int or None
+        Species identifier:
+        - 0: human
+        - 1: mouse
+        - None: skip species-specific length validation
+
+    Returns
+    -------
+    anndata.AnnData
+        Filtered AnnData object containing only the selected cCRE features.
+
+    Raises
+    ------
+    ValueError
+        If `species` is not None, 0, or 1.
+    AssertionError
+        If the length of `filter_idx` does not match the expected cCRE vocabulary
+        size for the specified species.
+
+    Notes
+    -----
+    The expected cCRE vocabulary sizes are:
+    - Human: 700,460 cCREs
+    - Mouse: 814,020 cCREs
+    """
+
+    if species not in {None, 0, 1}:
+        raise ValueError(
+            "`species` should be None, 0 (human), or 1 (mouse)."
+        )
+
+    # Validate species-specific cCRE vocabulary size
+    if species == 0:
+        assert len(filter_idx) == 700460, (
+            "Invalid human cCRE filter index: "
+            "expected length 700,460."
+        )
+
+    elif species == 1:
+        assert len(filter_idx) == 814020, (
+            "Invalid mouse cCRE filter index: "
+            "expected length 814,020."
+        )
+
+    # Subset cCRE features
+    adata = adata[:, filter_idx].copy()
+
+    if verbose:
+        print(f"Filtered cCREs: {adata.n_vars} features retained.")
+
+    return adata

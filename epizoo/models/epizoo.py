@@ -40,7 +40,7 @@ class EpiZooConfig:
     cca_hidden_dim: int = 128
 
     # Loss
-    cca_pos_weight: Optional[float] = None
+    cca_pos_weight: float = 1.0
     signal_pos_weight: float = 100.0
 
     # Initialization

@@ -28,6 +28,7 @@ from .processing import (
     compute_idf,
     compute_tfidf_matrix,
     generate_cell_sentences,
+    filter_cCREs,
 )
 
 from .ccre import (
@@ -62,6 +63,7 @@ __all__ = [
     "compute_idf",
     "compute_tfidf_matrix",
     "generate_cell_sentences",
+    "filter_cCREs",
     "SEAMDataset",
     "collate_fn_seam",
     "build_ccre_map",
