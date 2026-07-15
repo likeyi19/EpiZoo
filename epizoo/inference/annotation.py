@@ -6,6 +6,7 @@ from typing import Optional
 
 import torch
 from torch import amp
+from tqdm import tqdm
 
 from epizoo.inference.utils import get_device, get_input_ids
 
@@ -18,6 +19,7 @@ def predict_cell_types(
     use_amp: bool = True,
     return_cell_emb: bool = True,
     return_numpy: bool = True,
+    show_progress: bool = True,
 ):
     """
     Predict cell types with EpiZooAnno.
@@ -46,11 +48,15 @@ def predict_cell_types(
     all_labels = []
     all_cell_emb = [] if return_cell_emb else None
 
-    for step, batch in enumerate(dataloader):
+    iterator = dataloader
+    if show_progress:
+        iterator = tqdm(dataloader, desc="Predicting cell types")
+
+    for step, batch in enumerate(iterator):
         if step % 10 == 0 and device.type == "cuda":
             torch.cuda.empty_cache()
 
-        input_ids = _get_input_ids(batch).to(device)
+        input_ids = get_input_ids(batch).to(device)
 
         with amp.autocast(
             device_type=device.type,
