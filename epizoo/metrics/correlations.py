@@ -15,6 +15,7 @@ def compute_imputation_correlations(
     cell_type_key: str = "cell_type",
     layer: Optional[str] = None,
     imputed_layer: Optional[str] = None,
+    return_summary: bool = True,
 ) -> Dict[str, object]:
     """
     Compute correlation metrics for data imputation.
@@ -93,19 +94,25 @@ def compute_imputation_correlations(
         x_imputed.T,
     )
 
-    summary = summarize_correlations(
-        {
+    if return_summary:
+        summary = summarize_correlations(
+            {
+                "cell_type_corr": cell_type_corr,
+                "cell_corr": cell_corr,
+                "feature_corr": feature_corr,
+            }
+        )
+
+        return {
             "cell_type_corr": cell_type_corr,
             "cell_corr": cell_corr,
             "feature_corr": feature_corr,
-        }
-    )
-
+        }, summary
+    
     return {
         "cell_type_corr": cell_type_corr,
         "cell_corr": cell_corr,
         "feature_corr": feature_corr,
-        "summary": summary,
     }
 
 
