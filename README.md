@@ -1,4 +1,4 @@
-<img width="432" height="48" alt="image" src="https://github.com/user-attachments/assets/f9cc16fa-dea2-4773-9aeb-c96996d7cb64" /><img width="432" height="12" alt="image" src="https://github.com/user-attachments/assets/c9103695-97c3-487d-bdd8-c827f2c4467b" /><img width="432" height="24" alt="image" src="https://github.com/user-attachments/assets/b269f436-4ba8-492a-9270-44c0b8a76c2e" /># EpiZoo
+# EpiZoo
 
 ## A DNA sequence-aware foundation model for cross-species single-cell epigenomics
 
