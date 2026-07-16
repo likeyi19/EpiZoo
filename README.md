@@ -46,13 +46,13 @@ Species-specific decoders reconstruct accessibility landscapes and support signa
 
 EpiZoo is pretrained on Omni-scATAC, a manually curated multi-species scATAC-seq corpus.
 
-  Feature               Description
-  --------------------- -----------------------------
-  Species               Human and mouse
-  Cells                 \~20.9 million
-  Datasets              42 public datasets
-  Biological contexts   \>30 tissues and cell lines
-  Model size            \~2.6 billion parameters
+| Feature | Description |
+| --- | --- |
+| Species | Human and mouse |
+| Cells | ~20.9 million |
+| Datasets | 42 public datasets |
+| Biological contexts | >30 tissues and cell lines |
+| Model size | ~2.6 billion parameters |
 
 ## Capabilities
 
