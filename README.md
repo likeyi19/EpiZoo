@@ -1,175 +1,112 @@
-# EpiZoo
+<img width="432" height="48" alt="image" src="https://github.com/user-attachments/assets/f9cc16fa-dea2-4773-9aeb-c96996d7cb64" /><img width="432" height="12" alt="image" src="https://github.com/user-attachments/assets/c9103695-97c3-487d-bdd8-c827f2c4467b" /><img width="432" height="24" alt="image" src="https://github.com/user-attachments/assets/b269f436-4ba8-492a-9270-44c0b8a76c2e" /># EpiZoo
+
+## A DNA sequence-aware foundation model for cross-species single-cell epigenomics
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/likeyi19/EpiZoo/main/inst/model.png" width="700" alt="EpiZoo model overview">
 </p>
 
-## DNA sequence-aware foundation model for cross-species single-cell epigenomics
+Single-cell epigenomic atlases characterize chromatin regulatory landscapes across diverse biological contexts, providing an opportunity to capture the full spectrum of cellular diversity in these atlases. However, current models remain largely confined to individual species by genomic coordinate dependence and overlook regulatory information encoded in DNA sequences.
 
-EpiZoo is a DNA sequence-aware foundation model designed to learn
-transferable regulatory programs from large-scale single-cell chromatin
-accessibility atlases.
+**EpiZoo** is a DNA sequence-aware foundation model for cross-species single-cell epigenomics.
 
-Single-cell ATAC-seq profiles are extremely sparse and high-dimensional,
-while cis-regulatory elements (cCREs) are defined by species-specific
-genomic coordinates and often undergo rapid evolutionary turnover.
-EpiZoo addresses these challenges by converting single-cell epigenomic
-profiles into compact **cell sentences**, incorporating DNA
-sequence-derived regulatory priors, epigenomic context, and
-accessibility importance into a unified transformer framework.
+EpiZoo integrates:
 
-EpiZoo is pretrained on the manually curated **Omni-scATAC corpus**,
-containing approximately **20.9 million human and mouse single-cell
-epigenomic profiles** across diverse tissues and cell states. The model
-combines a sequence-aware embedding module based on SEAM, a
-mixture-of-experts (MoE) transformer, and species-specific signal
-decoders to learn generalizable regulatory representations.
+-   DNA-encoded regulatory information
+-   Sequence-independent epigenomic context
+-   Accessibility-based importance
 
-## Overview
+to build a unified representation space for single-cell epigenomics and enable cross-species regulatory analysis.
 
-EpiZoo is designed to bridge three levels of regulatory modeling:
+## Model architecture
 
-    DNA sequence
-          |
-          v
-    Sequence-derived regulatory priors
-          |
-          +----------------+
-          |                |
-          v                v
-    Cell-level regulatory states ----> Cross-species analysis
-          |
-          v
-    Context-aware regulatory interpretation
+EpiZoo converts single-cell ATAC-seq profiles into compact **cell sentences** composed of accessible cCRE tokens.
 
-The major design principles are:
+The model contains three core modules:
 
--   **Sequence-aware representation learning**
-    -   Encode cCRE DNA sequences using SEAM to provide transferable
-        regulatory priors.
-    -   Reduce dependence on fixed species-specific genomic coordinates.
--   **Large-scale multi-species pretraining**
-    -   Learn conserved and species-specific regulatory programs from
-        millions of scATAC-seq profiles.
--   **Efficient cell sentence representation**
-    -   Transform sparse accessibility profiles into TF-IDF-ranked cCRE
-        token sequences.
--   **Flexible downstream adaptation**
-    -   Support fine-tuning, new species adaptation, sequence-based
-        prediction, and regulatory interpretation.
+### DNA sequence-aware embedding module
 
-## Main capabilities
+For each cCRE token:
 
-### 1. Single-cell epigenomic representation learning
+``` text
+token embedding = sequence embedding + identity embedding + rank embedding
+```
 
-EpiZoo learns compact cell embeddings that preserve cellular
-heterogeneity from sparse chromatin accessibility profiles.
+The sequence-to-embedding anchoring module (SEAM) encodes the underlying DNA sequence of each cCRE to provide regulatory priors and reduce dependence on species-specific genomic coordinates. The learnable identity embedding captures sequence-independent epigenomic context. The rank embedding encodes the importance of each accessible cCRE according to its TF-IDF ranking.
 
-Applications:
+### Mixture-of-experts (MoE) transformer
 
--   Cell embedding extraction
--   Cell clustering
--   Developmental trajectory analysis
--   Low-dimensional visualization
+The MoE transformer captures long-range co-accessibility patterns while allowing different experts to specialize in regulatory heterogeneity associated with species, tissues and cell types.
 
-### 2. Cell type annotation
+### Species-specific signal decoders
 
-Using learned regulatory representations, EpiZoo supports accurate cell
-type annotation across datasets and tissues.
+Species-specific decoders reconstruct accessibility landscapes and support signal prediction and imputation.
 
-Applications:
+## Pretraining on Omni-scATAC
 
--   Reference-based annotation
--   Cross-dataset annotation
--   Fine-grained cell state identification
+EpiZoo is pretrained on Omni-scATAC, a manually curated multi-species scATAC-seq corpus.
 
-### 3. Chromatin accessibility imputation
+  Feature               Description
+  --------------------- -----------------------------
+  Species               Human and mouse
+  Cells                 \~20.9 million
+  Datasets              42 public datasets
+  Biological contexts   \>30 tissues and cell lines
+  Model size            \~2.6 billion parameters
 
-EpiZoo reconstructs missing accessibility signals by projecting cell
-representations back into the cCRE space.
+## Capabilities
+
+### Cell embedding extraction
+
+EpiZoo generates informative cell embeddings for:
+
+-   cell clustering
+-   feature extraction
+-   trajectory analysis
+
+### Cell type annotation
+
+EpiZoo enables robust cell type annotation across tissues and independent datasets.
+
+### Data imputation
+
+EpiZoo reconstructs missing accessibility signals and improves downstream analysis of sparse scATAC-seq data.
+
+## Cross-species foundation modeling
+
+The sequence-aware design enables adaptation to species beyond human and mouse.
+
+Demonstrated adaptations include:
+
+-   macaque
+-   zebrafish
+-   fruit fly
+-   maize
+
+## EpiZoo-Evo: regulatory evolution across primates
+
+EpiZoo-Evo enables joint analysis of human and macaque brain epigenomes by learning shared and divergent regulatory representations.
 
 Applications:
 
--   Dropout correction
--   Signal enhancement
--   Improved downstream analysis
+-   cross-species cell comparison
+-   conserved and divergent cCRE discovery
+-   regulatory evolution analysis
 
-### 4. Cross-species epigenomic modeling
+## EpiZoo-Cancer
 
-The sequence-aware architecture enables adaptation to species beyond
-human and mouse.
-
-Supported examples include:
-
--   Macaque
--   Zebrafish
--   Fruit fly
--   Maize
-
-EpiZoo can establish species-specific or cross-species foundation models
-through post-training.
-
-### 5. Evolutionary regulatory analysis
-
-EpiZoo-Evo extends EpiZoo for comparative primate epigenomics.
-
-It enables:
-
--   Joint human-macaque regulatory modeling
--   Identification of conserved and divergent cCRE programs
--   Discovery of putative functionally analogous regulatory elements
-
-### 6. Cancer regulatory variant prioritization
-
-EpiZoo-Cancer integrates cancer context with sequence-aware modeling to
-estimate the regulatory effects of noncoding somatic mutations.
+EpiZoo-Cancer combines DNA sequence modeling with cancer regulatory contexts to prioritize noncoding somatic mutations.
 
 Applications:
 
--   Mutation prioritization
--   Cancer-type-specific regulatory interpretation
--   Identification of candidate driver-associated regulatory disruptions
+-   regulatory mutation prioritization
+-   cancer-specific interpretation
 
-### 7. Sequence-to-accessibility prediction
+## Chromatin accessibility prediction
 
-By combining DNA sequence embeddings with learned cell-type embeddings,
-EpiZoo predicts cell-type-specific chromatin accessibility from genomic
-sequences.
-
-Applications:
-
--   Regulatory element interpretation
--   Enhancer activity prediction
--   Motif-level sequence attribution
-
-## Repository structure
-
-    EpiZoo/
-    |
-    ├── epizoo/
-    │   ├── models/          # Model architectures and parameter transfer utilities
-    │   ├── data/            # Dataset processing and cCRE utilities
-    │   ├── train/           # Training modules and objectives
-    │   ├── inference/       # Embedding extraction and prediction workflows
-    │   ├── metrics/         # Evaluation metrics
-    │   └── visualization/   # Visualization utilities
-    |
-    ├── examples/
-    │   ├── 01_extract_cell_embeddings.ipynb
-    │   ├── 02_finetune_epizoo.ipynb
-    │   ├── 03_posttrain_epizoo_for_new_species.ipynb
-    │   ├── 04_annotate_cell_types.ipynb
-    │   ├── 05_impute_data.ipynb
-    │   ├── 06_compute_loa_score.ipynb
-    │   └── 07_predict_peak.ipynb
-    |
-    ├── config/
-    ├── data/
-    └── requirements.txt
+By combining SEAM-derived sequence embeddings with learned cell-type embeddings, EpiZoo predicts cell-type-specific chromatin accessibility from DNA sequences and supports nucleotide-level interpretation.
 
 ## Installation
-
-Create a Python environment (Python \>= 3.10 recommended):
 
 ``` bash
 git clone https://github.com/likeyi19/EpiZoo.git
@@ -177,68 +114,29 @@ cd EpiZoo
 pip install -e .
 ```
 
-or:
+## Tutorials
 
-``` bash
-pip install -r requirements.txt
-```
-
-Some functions require additional external tools:
-
--   UCSC liftOver
--   bedtools
--   DNABERT-2 model weights/tokenizer
-
-## Quick start
-
-### Extract cell embeddings
-
-See:
-
-    examples/01_extract_cell_embeddings.ipynb
-
-### Fine-tune EpiZoo
-
-See:
-
-    examples/02_finetune_epizoo.ipynb
-
-### Adapt EpiZoo to new species
-
-See:
-
-    examples/03_posttrain_epizoo_for_new_species.ipynb
-
-### Cell type annotation
-
-See:
-
-    examples/04_annotate_cell_types.ipynb
-
-### Data imputation
-
-See:
-
-    examples/05_impute_data.ipynb
-
-### Cancer mutation prioritization
-
-See:
-
-    examples/06_compute_loa_score.ipynb
-
-### Sequence-based accessibility prediction
-
-See:
-
-    examples/07_predict_peak.ipynb
+  Tutorial                     Description
+  ---------------------------- ---------------------------------
+  01_extract_cell_embeddings   Extract EpiZoo cell embeddings
+  02_finetune_epizoo           Fine-tune EpiZoo
+  03_posttrain_new_species     Adapt EpiZoo to new species
+  04_annotation                Cell type annotation
+  05_data_imputation           Accessibility imputation
+  06_cancer                    Mutation prioritization
+  07_sequence_prediction       Sequence-to-function prediction
 
 ## Citation
 
 If you use EpiZoo in your research, please cite:
 
-    EpiZoo: a DNA sequence-aware foundation model for cross-species single-cell epigenomics.
+``` text
+Li K, Chen X et al.
+EpiZoo: a DNA sequence-aware foundation model for cross-species single-cell epigenomics.
+```
 
 ## License
+
+MIT License
 
 This project is released under the MIT License.
