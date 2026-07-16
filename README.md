@@ -1,12 +1,9 @@
 # EpiZoo
 
-```{=html}
 <p align="center">
-```
-`<img src="https://github.com/likeyi19/EpiZoo/blob/main/inst/model.png" width="700" alt="EpiZoo model overview">`{=html}
-```{=html}
+  <img src="https://raw.githubusercontent.com/likeyi19/EpiZoo/main/inst/model.png" width="700" alt="EpiZoo model overview">
 </p>
-```
+
 ## DNA sequence-aware foundation model for cross-species single-cell epigenomics
 
 EpiZoo is a DNA sequence-aware foundation model designed to learn
