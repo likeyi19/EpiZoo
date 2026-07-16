@@ -58,15 +58,50 @@ class SEAM(nn.Module):
 
     def forward(
         self,
-        input_ids: torch.Tensor,
-        attention_mask: torch.Tensor,
+        input_ids: torch.Tensor = None,
+        attention_mask: torch.Tensor = None,
     ) -> torch.Tensor:
+
         outputs = self.backbone(
             input_ids=input_ids,
             attention_mask=attention_mask,
         )
 
         hidden = self._get_last_hidden_state(outputs)
+        cls_emb = hidden[:, 0, :]
+
+        return self.proj(cls_emb)
+    
+
+    def forward_from_embeds(
+        self,
+        inputs_embeds,
+        attention_mask,
+    ):
+        backbone = self.backbone
+
+        token_type_ids = torch.zeros(
+            inputs_embeds.shape[:2],
+            dtype=torch.long,
+            device=inputs_embeds.device,
+        )
+
+        embedding_output = backbone.embeddings(
+            input_ids=None,
+            inputs_embeds=inputs_embeds,
+            token_type_ids=token_type_ids,
+        )
+
+        outputs = backbone.encoder(
+            embedding_output,
+            attention_mask=attention_mask,
+        )
+
+        hidden = self._get_last_hidden_state(outputs)
+
+        if hidden.dim() == 2:
+            hidden = hidden.view(inputs_embeds.shape[0], inputs_embeds.shape[1], -1)
+
         cls_emb = hidden[:, 0, :]
 
         return self.proj(cls_emb)

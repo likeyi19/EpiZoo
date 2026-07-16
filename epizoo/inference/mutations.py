@@ -26,7 +26,7 @@ def compute_seq_delta_embedding(
     seam_model,
     ref_sequence: str,
     alt_sequence: str,
-    dnabert_path: str,
+    cfg_path: str,
     device: Optional[str] = None,
     max_length: int = 512,
     batch_size: int = 2,
@@ -49,8 +49,8 @@ def compute_seq_delta_embedding(
     alt_sequence:
         Mutated DNA sequence.
 
-    dnabert_path:
-        DNABERT tokenizer path.
+    cfg_path:
+        Configuration file path for the SEAM model.
 
     Returns
     -------
@@ -60,7 +60,7 @@ def compute_seq_delta_embedding(
 
     dataset = SEAMDataset(
         sequences=[ref_sequence, alt_sequence],
-        dnabert_path=dnabert_path,
+        cfg_path=cfg_path,
         max_length=max_length,
         return_index=True,
     )
@@ -155,7 +155,7 @@ def score_mutation_loa(
     ref_sequence: str,
     alt_sequence: str,
     mut_idx: int,
-    dnabert_path: str,
+    cfg_path: str,
     device: Optional[str] = None,
     max_length: int = 512,
     window_size: int = 10,
@@ -203,7 +203,7 @@ def score_mutation_loa(
         seam_model=seam_model,
         ref_sequence=ref_sequence,
         alt_sequence=alt_sequence,
-        dnabert_path=dnabert_path,
+        cfg_path=cfg_path,
         device=device,
         max_length=max_length,
         use_amp=use_amp,

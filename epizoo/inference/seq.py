@@ -229,8 +229,7 @@ def compute_base_attributions(
         batch_size = inputs_embeds.size(0)
         mask = attention_mask.expand(batch_size, -1)
 
-        seq_emb = _encode_from_input_embeds(
-            model=model,
+        seq_emb = model.seam.forward_from_embeds(
             inputs_embeds=inputs_embeds,
             attention_mask=mask,
         )
@@ -419,32 +418,6 @@ def extract_top_motifs_for_meme(
         work_scores[start:end] = -np.inf
 
     return fasta
-
-
-def _encode_from_input_embeds(
-    model,
-    inputs_embeds: torch.Tensor,
-    attention_mask: torch.Tensor,
-) -> torch.Tensor:
-    """
-    Run SEAM backbone from input embeddings.
-
-    Supports HuggingFace-style backbones with `inputs_embeds`.
-    """
-
-    outputs = model.seam.backbone(
-        inputs_embeds=inputs_embeds,
-        attention_mask=attention_mask,
-    )
-
-    if hasattr(outputs, "last_hidden_state"):
-        hidden = outputs.last_hidden_state
-    else:
-        hidden = outputs[0]
-
-    cls_emb = hidden[:, 0, :]
-
-    return model.seam.proj(cls_emb)
 
 
 def _predict_one_cell_type(

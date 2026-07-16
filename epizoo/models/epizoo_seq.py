@@ -7,6 +7,7 @@ from typing import Optional
 
 import torch
 import torch.nn as nn
+import numpy as np
 
 from epizoo.models.seam import SEAM, SEAMConfig
 
@@ -17,7 +18,7 @@ class EpiZooSeqConfig:
     Configuration for EpiZooSeq.
     """
 
-    dnabert_path: str
+    cfg_path: str
     seq_emb_dim: int = 512
     hidden_dim: int = 256
     dropout: float = 0.1
@@ -60,6 +61,9 @@ class EpiZooSeq(nn.Module):
                 "`cell_type_emb` should have shape "
                 "[num_cell_types, cell_type_emb_dim]."
             )
+        
+        if isinstance(cell_type_emb, np.ndarray):
+            cell_type_emb = torch.from_numpy(cell_type_emb)
 
         self.num_cell_types = cell_type_emb.shape[0]
         self.cell_type_emb_dim = cell_type_emb.shape[1]
@@ -72,7 +76,7 @@ class EpiZooSeq(nn.Module):
 
         self.seam = SEAM(
             SEAMConfig(
-                dnabert_path=cfg.dnabert_path,
+                cfg_path=cfg.cfg_path,
                 emb_dim=cfg.seq_emb_dim,
                 trust_remote_code=cfg.trust_remote_code,
             )

@@ -19,6 +19,7 @@ def plot_density_scatter(
     cmap: str = "GnBu",
     downsample_size: int = 5000,
     save_path: Optional[str] = None,
+    figsize=None,
 ):
     """
     Plot density scatter of observed vs predicted signals.
@@ -43,7 +44,10 @@ def plot_density_scatter(
         downsample_size=downsample_size,
     )
 
-    fig, ax = plt.subplots(figsize=(1.5, 1.5))
+    if figsize is None:
+        figsize = (1.5, 1.5)
+
+    fig, ax = plt.subplots(figsize=figsize)
 
     max_val = max(target_log.max(), pred_log.max())
     ax.plot(
