@@ -135,6 +135,10 @@ Li K, Chen X et al.
 EpiZoo: a DNA sequence-aware foundation model for cross-species single-cell epigenomics.
 ```
 
+## Model checkpoint
+
+The pretrained EpiZoo checkpoint can be downloaded at [pretrained_EpiZoo.pth](https://drive.google.com/file/d/1Xs5R_LAMbB_Zqpg7SFHlrAMfVcdcGwVE/view?usp=drive_link))
+
 ## License
 
 MIT License
