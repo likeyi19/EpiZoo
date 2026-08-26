@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "epizoo"
+version = "0.1.0"
+description = "A DNA sequence-aware foundation model for cross-species single-cell epigenomics"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+license = { file = "LICENSE" }
+
+authors = [
+    { name = "Keyi Li" }
+]
+
+dependencies = [
+    "transformers==4.57.6",
+    "numpy==2.1.2",
+    "pandas==2.3.3",
+    "scipy==1.17.1",
+    "scikit-learn>=1.3",
+    "anndata==0.12.10",
+    "scanpy==1.11.5",
+    "tqdm>=4.66",
+    "h5py>=3.8",
+]
+
+[project.optional-dependencies]
+plot = [
+    "matplotlib>=3.7",
+    "seaborn>=0.13",
+    "umap-learn>=0.5",
+    "python-igraph>=0.10",
+    "leidenalg>=0.10",
+    "louvain>=0.8",
+]
+
+sequence = [
+    "pyfaidx>=0.8",
+]
+
+interpret = [
+    "captum>=0.7",
+    "logomaker>=0.8",
+]
+
+finetune = [
+    "peft>=0.11",
+]
+
+full = [
+    "matplotlib>=3.7",
+    "seaborn>=0.13",
+    "umap-learn>=0.5",
+    "python-igraph>=0.10",
+    "leidenalg>=0.10",
+    "louvain>=0.8",
+    "pyfaidx>=0.8",
+    "captum>=0.7",
+    "logomaker>=0.8",
+    "peft>=0.11",
+]
+
+dev = [
+    "pytest>=8",
+    "build>=1.2",
+    "twine>=5",
+]
+
+[project.urls]
+Homepage = "https://github.com/likeyi19/EpiZoo"
+Repository = "https://github.com/likeyi19/EpiZoo"
+Issues = "https://github.com/likeyi19/EpiZoo/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["epizoo*"]

@@ -158,8 +158,16 @@ MAX_JOBS=4 pip install flash-attn==2.8.3 --no-build-isolation
 
 ### 5. Install EpiZoo dependencies
 
+For the core EpiZoo model and cell embedding inference:
+
 ``` bash
-pip install -r requirements.txt
+pip install -e .
+```
+
+For the full set of optional dependencies used by tutorials, visualization, sequence analysis, interpretation and fine-tuning:
+
+``` bash
+pip install -e ".[full]"
 ```
 
 ## Tutorials
