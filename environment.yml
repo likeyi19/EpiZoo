@@ -1,0 +1,15 @@
+name: epizoo
+
+channels:
+  - nvidia
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.11
+  - pip
+  - cuda-toolkit=12.8.1
+  - ninja
+  - packaging
+  - setuptools=80.9.0
+  - ipykernel

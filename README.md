@@ -108,10 +108,58 @@ By combining SEAM-derived sequence embeddings with learned cell-type embeddings,
 
 ## Installation
 
+EpiZoo has been tested with the following environment:
+
+| Component | Tested version |
+| --- | --- |
+| Python | 3.11 |
+| PyTorch | 2.7.1 |
+| PyTorch CUDA | 12.8 |
+| CUDA Toolkit | 12.8.1 |
+| FlashAttention | 2.8.3 |
+| GPU | NVIDIA RTX 4090 |
+
+We recommend using a Conda environment to ensure reproducibility.
+
+### 1. Clone EpiZoo
+
 ``` bash
 git clone https://github.com/likeyi19/EpiZoo.git
 cd EpiZoo
-pip install -e .
+```
+
+### 2. Create the Conda environment
+
+``` bash
+conda env create -f environment.yml
+conda activate epizoo
+```
+
+The environment includes Python 3.11 and CUDA Toolkit 12.8.1.
+
+### 3. Install PyTorch
+
+Install the tested PyTorch build with CUDA 12.8 support:
+
+``` bash
+pip install torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 \
+  --index-url https://download.pytorch.org/whl/cu128
+```
+
+### 4. Install FlashAttention
+
+EpiZoo uses FlashAttention for efficient Transformer computation.
+
+The tested version is FlashAttention 2.8.3.
+
+``` bash
+MAX_JOBS=4 pip install flash-attn==2.8.3 --no-build-isolation
+```
+
+### 5. Install EpiZoo dependencies
+
+``` bash
+pip install -r requirements.txt
 ```
 
 ## Tutorials
