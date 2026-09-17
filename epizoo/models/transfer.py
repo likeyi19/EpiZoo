@@ -208,10 +208,10 @@ def transfer_epizoox_state_dict_with_map(
         upper=source["ccre_emb.weight"].shape[0],
     )
 
-    ccre_weight[target_emb_rows] = source["ccre_emb.weight"][source_emb_rows]
+    ccre_weight[target_emb_rows] = source["ccre_emb.weight"][source_emb_rows].to(ccre_weight.dtype)
 
-    decoder_state["signal_decoder.weight"][new_idx] = source[decoder_weight_key][ref_idx]
-    decoder_state["signal_decoder.bias"][new_idx] = source[decoder_bias_key][ref_idx]
+    decoder_state["signal_decoder.weight"][new_idx] = source[decoder_weight_key][ref_idx].to(decoder_state["signal_decoder.weight"].dtype)
+    decoder_state["signal_decoder.bias"][new_idx] = source[decoder_bias_key][ref_idx].to(decoder_state["signal_decoder.bias"].dtype)
 
     new_state_dict["ccre_emb.weight"] = ccre_weight
     new_state_dict["seq_emb.weight"] = seq_weight

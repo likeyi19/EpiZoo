@@ -202,6 +202,7 @@ def build_ccre_map(
     min_overlap: int = 1,
     tmp_dir: Optional[str] = None,
     keep_tmp: bool = False,
+    cancel_check=None,
 ) -> Dict[int, int]:
     """
     Build cCRE index mapping from a new species to a reference species.
@@ -286,6 +287,7 @@ def build_ccre_map(
             chain_file=chain_file,
             output_bed=lifted_bed,
             unmapped_bed=unmapped_bed,
+            cancel_check=cancel_check,
         )
 
         _run_bedtools_intersect(
@@ -293,6 +295,7 @@ def build_ccre_map(
             a_bed=lifted_bed,
             b_bed=ref_indexed,
             output_bed=overlap_bed,
+            cancel_check=cancel_check,
         )
 
         ccre_map = _parse_overlap_map(
@@ -374,6 +377,7 @@ def _run_liftover(
     chain_file: str,
     output_bed: Path,
     unmapped_bed: Path,
+    cancel_check=None,
 ) -> None:
     """
     Run UCSC liftOver.
@@ -387,7 +391,10 @@ def _run_liftover(
         str(unmapped_bed),
     ]
 
-    _run_cmd(cmd)
+    if cancel_check is None:
+        _run_cmd(cmd)
+    else:
+        _cancellable_run(cmd, cancel_check)
 
 
 def _run_bedtools_intersect(
@@ -395,6 +402,7 @@ def _run_bedtools_intersect(
     a_bed: Path,
     b_bed: Path,
     output_bed: Path,
+    cancel_check=None,
 ) -> None:
     """
     Run bedtools intersect -wao.
@@ -411,13 +419,35 @@ def _run_bedtools_intersect(
     ]
 
     with open(output_bed, "w") as f:
-        subprocess.run(
-            cmd,
-            stdout=f,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=True,
-        )
+        if cancel_check is None:
+            subprocess.run(cmd, stdout=f, stderr=subprocess.PIPE, text=True, check=True)
+        else:
+            _cancellable_run(cmd, cancel_check, stdout=f)
+
+
+def _cancellable_run(cmd, cancel_check, stdout=None):
+    """Optional lifecycle hook; same commands and scientific output as before."""
+    cancel_check()
+    with tempfile.TemporaryFile(mode='w+') as errors:
+        child = subprocess.Popen(cmd, stdout=stdout, stderr=errors, text=True)
+        try:
+            while True:
+                try:
+                    code = child.wait(timeout=0.1)
+                    break
+                except subprocess.TimeoutExpired:
+                    cancel_check()
+            errors.seek(0)
+            if code:
+                raise subprocess.CalledProcessError(code, cmd, stderr=errors.read(65536))
+            cancel_check()
+        finally:
+            if child.poll() is None:
+                child.terminate()
+                try:
+                    child.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    child.kill(); child.wait()
 
 
 def _parse_overlap_map(
@@ -437,6 +467,8 @@ def _parse_overlap_map(
         A(4 columns) + B(4 columns) + overlap_length
     """
 
+    if overlap_bed.stat().st_size == 0:
+        return {}
     overlap = pd.read_csv(
         overlap_bed,
         sep="\t",
